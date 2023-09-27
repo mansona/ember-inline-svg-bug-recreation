@@ -1,57 +1,26 @@
-# test-svg-stuff
+# ember-inline-svg bug recreation
 
-This README outlines the details of collaborating on this Ember application.
-A short introduction of this app could easily go here.
+This repo is a reproduction of a bug that we noticed in [Embroider](https://github.com/embroider-build/embroider) relating to symbolic links.
 
-## Prerequisites
+## Steps to reproduce
 
-You will need the following things properly installed on your computer.
+If you run `pnpm install` and `pnpm start` in this repo without doing any symbolic links you should see something that looks like this: 
 
-* [Git](https://git-scm.com/)
-* [Node.js](https://nodejs.org/)
-* [pnpm](https://pnpm.io/)
-* [Ember CLI](https://cli.emberjs.com/release/)
-* [Google Chrome](https://google.com/chrome/)
+(image)
 
-## Installation
+which is an inlined svg using [ember-inline-svg](https://github.com/minutebase/ember-inline-svg)
 
-* `git clone <repository-url>` this repository
-* `cd test-svg-stuff`
-* `pnpm install`
+to reproduce the issue follow these steps: 
 
-## Running / Development
+- `rm -rf node_modules` (if you have run `pnpm i` already)
+- `mkdir /tmp/some-strange-place`
+- `ln -s /tmp/some-strange-place node_modules`
+- `pnpm i`
+- `pnpm start`
+- 💥 Error!
 
-* `ember serve`
-* Visit your app at [http://localhost:4200](http://localhost:4200).
-* Visit your tests at [http://localhost:4200/tests](http://localhost:4200/tests).
+The error is 
 
-### Code Generators
-
-Make use of the many generators for code, try `ember help generate` for more details
-
-### Running Tests
-
-* `ember test`
-* `ember test --server`
-
-### Linting
-
-* `pnpm lint`
-* `pnpm lint:fix`
-
-### Building
-
-* `ember build` (development)
-* `ember build --environment production` (production)
-
-### Deploying
-
-Specify what it takes to deploy your app.
-
-## Further Reading / Useful Links
-
-* [ember.js](https://emberjs.com/)
-* [ember-cli](https://cli.emberjs.com/release/)
-* Development Browser Extensions
-  * [ember inspector for chrome](https://chrome.google.com/webstore/detail/ember-inspector/bmdblncegkenkacieihfhpjfppoconhi)
-  * [ember inspector for firefox](https://addons.mozilla.org/en-US/firefox/addon/ember-inspector/)
+```
+Module not found: Error: Can't resolve '../svgs' in '/path-to-repo/node_modules/.embroider/rewritten-app/helpers'
+```
